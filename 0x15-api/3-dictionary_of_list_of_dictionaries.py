@@ -1,26 +1,27 @@
 #!/usr/bin/python3
-"""Dictionary of list of dictionaries"""
-
+"""Script that uses REST API"""
 import json
 import requests
 
-if __name__ == '__main__':
-    endpoint = requests.get('https://jsonplaceholder.typicode.com/users')
-    users = endpoint.json()
-    endpoint = requests.get('https://jsonplaceholder.typicode.com/todos')
-    task = endpoint.json()
 
-    dic = {
-        str(data.get('id')): [
-            {
-                'username': data.get('username'),
-                'task': item .get('titles'), 'completed':
-                    item.get('completed')
-            }
-            for item in task
-            if item.get('userId') == data.get('id')
-        ]
-        for data in users
-    }
-    with open('todo_all_employees.json', 'w') as json_file:
-        json.dump(dic, json_file)
+def make_all(users=None, todos=None):
+    """Turns all payloads into JSON format"""
+    all_list = []
+    alljson = {}
+    with open("todo_all_employees.json", "w") as f:
+        for i in users:
+            u = i.get("id")
+            for i in todos:
+                if u == i.get("userId"):
+                    all_list.append({"username": users[0].get("username"),
+                                     "task": i.get("title"),
+                                     "completed": i.get("completed")})
+            alljson[u] = all_list
+        json.dump(alljson, f)
+
+
+if __name__ == "__main__":
+    users = requests.get("https://jsonplaceholder.typicode.com/users/").json()
+    todos = requests.get("https://jsonplaceholder.typicode.com/todos/").json()
+
+    make_all(users, todos)
